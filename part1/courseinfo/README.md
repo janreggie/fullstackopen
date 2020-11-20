@@ -1,3 +1,0 @@
-# part1/courseinfo
-
-To be developed in future exercises...

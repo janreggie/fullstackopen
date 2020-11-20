@@ -1,0 +1,3 @@
+[submodule "part1/courseinfo"]
+	path = part1/courseinfo
+	url = https://github.com/janreggie/fso-courseinfo.git
