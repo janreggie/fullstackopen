@@ -4,3 +4,6 @@
 [submodule "part1/unicafe"]
 	path = part1/unicafe
 	url = https://github.com/janreggie/fso-unicafe.git
+[submodule "part1/anecdotes"]
+	path = part1/anecdotes
+	url = https://github.com/janreggie/fso-anecdotes.git
