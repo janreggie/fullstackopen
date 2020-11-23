@@ -7,3 +7,6 @@
 [submodule "part1/anecdotes"]
 	path = part1/anecdotes
 	url = https://github.com/janreggie/fso-anecdotes.git
+[submodule "part2/courseinfo"]
+	path = part2/courseinfo
+	url = https://github.com/janreggie/fso-courseinfo.git
