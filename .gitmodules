@@ -10,3 +10,6 @@
 [submodule "part2/courseinfo"]
 	path = part2/courseinfo
 	url = https://github.com/janreggie/fso-courseinfo.git
+[submodule "part2/phonebook"]
+	path = part2/phonebook
+	url = https://github.com/janreggie/fso-phonebook.git
