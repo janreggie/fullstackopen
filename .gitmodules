@@ -13,3 +13,6 @@
 [submodule "part2/phonebook"]
 	path = part2/phonebook
 	url = https://github.com/janreggie/fso-phonebook.git
+[submodule "part2/countries"]
+	path = part2/countries
+	url = https://github.com/janreggie/fso-countries.git
