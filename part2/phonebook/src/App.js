@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import axios from 'axios'
-
-const BASE_URL = 'http://localhost:3001/persons'
+import personData from './services/persons'
 
 /** Filter sets what to filter for */
 const Filter = ({ searchFor, setSearchFor }) => (
@@ -38,13 +36,12 @@ const EntryForm = ({ persons, setPersons }) => {
       number: newNumber
     }
 
-    axios.post(BASE_URL, newPerson)
-      .then(response => {
-        setPersons(persons.concat(response.data))
+    personData.addEntry(newPerson)
+      .then(returnedEntry => {
+        setPersons(persons.concat(returnedEntry))
         setNewName('')
         setNewNumber('')
       })
-   
   }
 
   return (
@@ -80,12 +77,9 @@ const Persons = ({ persons, searchFor }) => {
 
 const App = () => {
   const [persons, setPersons] = useState([])
-  useEffect(() => {
-    axios
-      .get(BASE_URL)
-      .then(response => setPersons(response.data))
-  }, [])
   const [searchFor, setSearchFor] = useState('')
+
+  useEffect(() => personData.getAll().then(persons => setPersons(persons)), [])
 
   return (
     <div>
