@@ -19,21 +19,26 @@ const EntryForm = ({ persons, setPersons }) => {
    */
   const submit = (event) => {
     event.preventDefault()
-
-    /** check if newName is in persons.
-     * I *can* do `persons.map(p => p.name).includes(newName)` but I'd rather not because potential performance issues.
-     * The function just reduces acc, initially to false, to check if any cur.name equals newName.
-     * If acc is true, then it stays true.
-     **/
-    const isInPersons = persons.reduce((acc, cur) => (acc ? acc : cur.name === newName), false)
-    if (isInPersons) {
-      alert(`${newName} is already added to phonebook`)
-      return
-    }
-
     const newPerson = {
       name: newName,
       number: newNumber
+    }
+
+    const foundPerson = persons.find(person => person.name === newPerson.name)
+    if (!!foundPerson) {
+      const toUpdate = window.confirm(`${newPerson.name} is already in phonebook. Replace the old number with the new one?`)
+      if (!toUpdate) {
+        return
+      }
+
+      personData.changeEntry(foundPerson.id, newPerson)
+        .then(returnedEntry => {
+          setPersons(persons.map(person => person.name === returnedEntry.name ? returnedEntry : person))
+          setNewName('')
+          setNewNumber('')
+        })
+
+      return
     }
 
     personData.addEntry(newPerson)

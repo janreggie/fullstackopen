@@ -8,7 +8,10 @@ const getAll = () => axios.get(BASE_URL).then(response => response.data)
 /** addEntry returns a promise that resolves to the person who has just been added */
 const addEntry = (person) => axios.post(BASE_URL, person).then(response => response.data)
 
+/** changeEntry changes the entry of a given ID to person */
+const changeEntry = (id, person) => axios.put(BASE_URL + "/" + id, person).then(response => response.data)
+
 /** deleteEntry delets a person with a particular ID */
 const deleteEntry = (id) => axios.delete(BASE_URL + "/" + id)
 
-export default { getAll, addEntry, deleteEntry }
+export default { getAll, addEntry, changeEntry, deleteEntry }
