@@ -25,7 +25,7 @@ const EntryForm = ({ persons, setPersons }) => {
      * The function just reduces acc, initially to false, to check if any cur.name equals newName.
      * If acc is true, then it stays true.
      **/
-    const isInPersons = persons.reduce((acc, cur) => ( acc ? acc : cur.name === newName ), false)
+    const isInPersons = persons.reduce((acc, cur) => (acc ? acc : cur.name === newName), false)
     if (isInPersons) {
       alert(`${newName} is already added to phonebook`)
       return
@@ -59,18 +59,40 @@ const EntryForm = ({ persons, setPersons }) => {
   )
 }
 
+/**
+ * Person displays a person.
+ * setPersons is passed here to allow modification if an entry were deleted.
+ * 
+ * @param {{person: {name: string, number: string, id: number}}}
+ */
+const Person = ({ person, setPersons }) => {
+  const handleDelete = () => {
+    const toDelete = window.confirm(`Delete ${person.name}?`)
+    if (!toDelete) {
+      return
+    }
+
+    personData.deleteEntry(person.id)
+      .then(_ => personData.getAll().then(persons => setPersons(persons)))
+  }
+
+  return (
+    <div>
+      {person.name} {person.number} <button onClick={handleDelete}>delete</button>
+    </div>
+  )
+}
+
 /** 
  * Persons displays persons that contain the string searchFor.
  * Ignore case.
- * 
- * @param {{persons: {name: string, number: string}[], searchFor: string}}
  */
-const Persons = ({ persons, searchFor }) => {
+const Persons = ({ persons, setPersons, searchFor }) => {
   const onlyDisplay = persons.filter(person => person.name.toLocaleLowerCase().includes(searchFor))
 
   return (
     <div>
-      {onlyDisplay.map(person => <div key={person.name}>{person.name} {person.number}</div>)}
+      {onlyDisplay.map(person => <Person key={person.id} person={person} setPersons={setPersons} />)}
     </div>
   )
 }
@@ -90,7 +112,7 @@ const App = () => {
       <EntryForm persons={persons} setPersons={setPersons} />
 
       <h3>Numbers</h3>
-      <Persons persons={persons} searchFor={searchFor} />
+      <Persons persons={persons} setPersons={setPersons} searchFor={searchFor} />
     </div>
   )
 }
