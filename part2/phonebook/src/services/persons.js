@@ -14,4 +14,6 @@ const changeEntry = (id, person) => axios.put(BASE_URL + "/" + id, person).then(
 /** deleteEntry delets a person with a particular ID */
 const deleteEntry = (id) => axios.delete(BASE_URL + "/" + id)
 
-export default { getAll, addEntry, changeEntry, deleteEntry }
+const exportedObject = { getAll, addEntry, changeEntry, deleteEntry }
+
+export default exportedObject

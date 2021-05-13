@@ -2,6 +2,39 @@ import React, { useEffect, useState } from 'react'
 import personData from './services/persons'
 import './App.css'
 
+const App = () => {
+  const [persons, setPersons] = useState([])
+  const [searchFor, setSearchFor] = useState('')
+  const [notice, setNotice] = useState('')
+  const [error, setError] = useState('')
+
+  useEffect(() => personData.getAll().then(persons => setPersons([...persons, {name: 'Rogue Rougeson', id: 1001, number: '303 444944949 '}])), [])
+
+  const transientNotice = (message) => {
+    setNotice(message)
+    setTimeout(() => setNotice(''), 5000)
+  }
+  const transientError = (message) => {
+    setError(message)
+    setTimeout(() => setError(''), 5000)
+  }
+
+  return (
+    <div>
+      <h2>Phonebook</h2>
+      <Notice message={notice} />
+      <Error message={error} />
+      <Filter searchFor={searchFor} setSearchFor={setSearchFor} />
+
+      <h3>add a new</h3>
+      <EntryForm persons={persons} setPersons={setPersons} setNotice={transientNotice} />
+
+      <h3>Numbers</h3>
+      <Persons persons={persons} setPersons={setPersons} searchFor={searchFor} setNotice={transientNotice} setError={transientError} />
+    </div>
+  )
+}
+
 /** 
  * MessageOrNone returns a div of some className containing message if it exists.
  * Otherwise, return null.
@@ -86,6 +119,23 @@ const EntryForm = ({ persons, setPersons, setNotice }) => {
   )
 }
 
+/** 
+ * Persons displays persons that contain the string searchFor.
+ * Ignore case.
+ */
+const Persons = ({ persons, setPersons, searchFor, setNotice, setError }) => {
+  const onlyDisplay = persons.filter(person => person.name.toLocaleLowerCase().includes(searchFor))
+
+  return (
+    <div>
+      {onlyDisplay.map(
+        person => // They should teach us Redux soon...
+          <Person key={person.id} allPersons={persons} person={person} setPersons={setPersons} setNotice={setNotice} setError={setError} />
+      )}
+    </div>
+  )
+}
+
 /**
  * Person displays a person.
  * allPersons and setPersons are passed here to allow modification if an entry were deleted.
@@ -106,56 +156,6 @@ const Person = ({ person, allPersons, setPersons, setNotice, setError }) => {
   return (
     <div>
       {person.name} {person.number} <button onClick={handleDelete}>delete</button>
-    </div>
-  )
-}
-
-/** 
- * Persons displays persons that contain the string searchFor.
- * Ignore case.
- */
-const Persons = ({ persons, setPersons, searchFor, setNotice, setError }) => {
-  const onlyDisplay = persons.filter(person => person.name.toLocaleLowerCase().includes(searchFor))
-
-  return (
-    <div>
-      {onlyDisplay.map(
-        person => // They should teach us Redux soon...
-          <Person key={person.id} allPersons={persons} person={person} setPersons={setPersons} setNotice={setNotice} setError={setError} />
-      )}
-    </div>
-  )
-}
-
-const App = () => {
-  const [persons, setPersons] = useState([])
-  const [searchFor, setSearchFor] = useState('')
-  const [notice, setNotice] = useState('')
-  const [error, setError] = useState('')
-
-  useEffect(() => personData.getAll().then(persons => setPersons([...persons, {name: 'Rogue Rougeson', id: 1001, number: '303 444944949 '}])), [])
-
-  const transientNotice = (message) => {
-    setNotice(message)
-    setTimeout(() => setNotice(''), 5000)
-  }
-  const transientError = (message) => {
-    setError(message)
-    setTimeout(() => setError(''), 5000)
-  }
-
-  return (
-    <div>
-      <h2>Phonebook</h2>
-      <Notice message={notice} />
-      <Error message={error} />
-      <Filter searchFor={searchFor} setSearchFor={setSearchFor} />
-
-      <h3>add a new</h3>
-      <EntryForm persons={persons} setPersons={setPersons} setNotice={transientNotice} />
-
-      <h3>Numbers</h3>
-      <Persons persons={persons} setPersons={setPersons} searchFor={searchFor} setNotice={transientNotice} setError={transientError} />
     </div>
   )
 }
