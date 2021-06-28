@@ -11,3 +11,6 @@
 
 # Sandboxes
 */sandbox_*
+
+# Env var
+.env.local
