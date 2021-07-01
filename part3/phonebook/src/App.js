@@ -27,7 +27,7 @@ const App = () => {
       <Filter searchFor={searchFor} setSearchFor={setSearchFor} />
 
       <h3>add a new</h3>
-      <EntryForm persons={persons} setPersons={setPersons} setNotice={transientNotice} />
+      <EntryForm persons={persons} setPersons={setPersons} setNotice={transientNotice} setError={transientError} />
 
       <h3>Numbers</h3>
       <Persons persons={persons} setPersons={setPersons} searchFor={searchFor} setNotice={transientNotice} setError={transientError} />
@@ -62,7 +62,7 @@ const Filter = ({ searchFor, setSearchFor }) => (
 )
 
 /** EntryForm submits entries */
-const EntryForm = ({ persons, setPersons, setNotice }) => {
+const EntryForm = ({ persons, setPersons, setNotice, setError }) => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
 
@@ -91,6 +91,7 @@ const EntryForm = ({ persons, setPersons, setNotice }) => {
           setNewNumber('')
           setNotice(`Modified ${returnedEntry.name}`)
         })
+        .catch(error => setError(error))
 
       return
     }
@@ -102,6 +103,7 @@ const EntryForm = ({ persons, setPersons, setNotice }) => {
         setNewNumber('')
         setNotice(`Added ${returnedEntry.name}`)
       })
+      .catch(error => setError(error))
   }
 
   return (
