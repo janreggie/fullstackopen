@@ -1,9 +1,9 @@
 POST http://localhost:3001/api/blogs
 Content-Type: application/json
 
-[{
-  "title": "Sample blog post",
+{
+  "title": "Yet another blog post",
   "author": "Jessica Rodriguez",
   "url": "https://example.com",
   "likes": 43
-}]
+}
