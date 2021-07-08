@@ -7,8 +7,11 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "test": "exit 1",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest --verbose",
     "lint": "eslint ."
+  },
+  "jest": {
+    "testEnvironment": "node"
   },
   "author": "Jan Reggie Dela Cruz",
   "license": "MIT",
@@ -18,6 +21,7 @@
     "eslint-plugin-import": "^2.23.4",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.1.0",
+    "jest": "^27.0.6",
     "nodemon": "^2.0.9"
   },
   "dependencies": {
