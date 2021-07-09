@@ -39,28 +39,33 @@ const favoriteBlog = (blogs) => {
 //
 const mostBlogs = (blogs) => {
   if (blogs.length === 0) { return {} }
+  if (blogs.length === 1) {
+    const blog = blogs[0]
+    return { author: blog.author, blogs: 1 }
+  }
 
   // Create a map of authors and their counts
   //
-  const counts = blogs.reduce(
-    (prevCounts, blog) => {
+  const blogCounts = blogs.reduce(
+    (counts, blog) => {
       const author = blog.author
       if (typeof author !== 'string') {
-        return prevCounts
+        return counts
       }
-      if (!prevCounts.has(author)) {
-        prevCounts.set(author, 1)
+
+      if (!counts.has(author)) {
+        counts.set(author, 1)
       } else {
-        prevCounts.set(author, prevCounts.get(author) + 1)
+        counts.set(author, counts.get(author) + 1)
       }
-      return prevCounts
+      return counts
     },
     new Map()
   )
 
   let maxBlogCount = 0
   let mostWrittenAuthor = ''
-  for (const [author, count] of counts.entries()) {
+  for (const [author, count] of blogCounts.entries()) {
     if (count > maxBlogCount) {
       mostWrittenAuthor = author
       maxBlogCount = count
@@ -70,4 +75,46 @@ const mostBlogs = (blogs) => {
   return { author: mostWrittenAuthor, blogs: maxBlogCount }
 }
 
-export default { dummy, totalLikes, favoriteBlog, mostBlogs }
+// mostLikes returns the author with the most number of likes received
+// as well as said number
+//
+const mostLikes = (blogs) => {
+  if (blogs.length === 0) { return {} }
+  if (blogs.length === 1) {
+    const blog = blogs[0]
+    return { author: blog.author, likes: blog.likes }
+  }
+
+  // Create map of authors and how many likes they received
+  const likeCounts = blogs.reduce(
+    (counts, blog) => {
+      const author = blog.author
+      const likes = blog.likes
+      if (typeof author !== 'string' || typeof likes !== 'number') {
+        return counts
+      }
+
+      if (!counts.has(author)) {
+        counts.set(author, likes)
+      } else {
+        counts.set(author, counts.get(author) + likes)
+      }
+
+      return counts
+    },
+    new Map()
+  )
+
+  let maxLikes = 0
+  let mostLikedAuthor = ''
+  for (const [author, likes] of likeCounts) {
+    if (likes > maxLikes) {
+      mostLikedAuthor = author
+      maxLikes = likes
+    }
+  }
+
+  return { author: mostLikedAuthor, likes: maxLikes }
+}
+
+export default { dummy, totalLikes, favoriteBlog, mostBlogs, mostLikes }
