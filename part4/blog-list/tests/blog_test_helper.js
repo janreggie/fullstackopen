@@ -27,4 +27,11 @@ const blogpostsInDB = async () => {
   return blogposts.map(post => post.toJSON())
 }
 
-export { initialBlogposts, nonExistingID, blogpostsInDB }
+const removeIDFromBlogpost = post => ({
+  title: post.title,
+  author: post.author,
+  url: post.url,
+  likes: post.likes
+})
+
+export { initialBlogposts, nonExistingID, blogpostsInDB, removeIDFromBlogpost }

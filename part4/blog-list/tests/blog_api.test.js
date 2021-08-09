@@ -2,7 +2,7 @@ import mongoose from 'mongoose'
 import supertest from 'supertest'
 import app from '../app.js'
 import Blog from '../models/blog.js'
-import { initialBlogposts } from './blog_test_helper.js'
+import { blogpostsInDB, initialBlogposts, removeIDFromBlogpost } from './blog_test_helper.js'
 
 const api = supertest(app)
 
@@ -29,8 +29,8 @@ test('all blogposts are returned',
     const response = await api.get('/api/blogs')
     expect(response.body).toHaveLength(initialBlogposts.length)
 
-    const contents = response.body.map(r => [r.title, r.author, r.likes])
-    const toExpect = initialBlogposts.map(r => [r.title, r.author, r.likes])
+    const contents = response.body.map(removeIDFromBlogpost)
+    const toExpect = initialBlogposts.map(removeIDFromBlogpost)
     expect(contents).toEqual(expect.arrayContaining(toExpect))
   })
 
@@ -41,4 +41,19 @@ test('desired properties exists',
 
     const proplist = ['id', 'title', 'author', 'url', 'likes']
     proplist.map(prop => expect(firstPost).toHaveProperty(prop))
+  })
+
+test('can add entries properly',
+  async () => {
+    const post = { title: 'Ang Musmos na Kabihasnan ng Maynila', author: 'Ibn Saud', likes: 69 }
+    await api
+      .post('/api/blogs')
+      .send(post)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+
+    const blogpostsAtEnd = await blogpostsInDB()
+    const contents = blogpostsAtEnd.map(removeIDFromBlogpost)
+    expect(contents).toHaveLength(initialBlogposts.length + 1)
+    expect(contents).toContainEqual(post)
   })
