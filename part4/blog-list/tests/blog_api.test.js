@@ -33,3 +33,12 @@ test('all blogposts are returned',
     const toExpect = initialBlogposts.map(r => [r.title, r.author, r.likes])
     expect(contents).toEqual(expect.arrayContaining(toExpect))
   })
+
+test('desired properties exists',
+  async () => {
+    const response = await api.get('/api/blogs')
+    const firstPost = response.body[0]
+
+    const proplist = ['id', 'title', 'author', 'url', 'likes']
+    proplist.map(prop => expect(firstPost).toHaveProperty(prop))
+  })
