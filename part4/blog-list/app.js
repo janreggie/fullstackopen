@@ -2,6 +2,7 @@ import express from 'express'
 import cors from 'cors'
 import middleware from './utils/middleware.js'
 import blogRouter from './controllers/blogs.js'
+import 'express-async-errors' // No need for try-except's in controllers/notes.js
 
 const app = express()
 
