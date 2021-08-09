@@ -12,9 +12,9 @@ mongoose.connect(config.MONGODB_URI, {
   .catch(error => logger.error('error connecting to MongoDB:', error.message))
 
 const blogSchema = new mongoose.Schema({
-  title: String,
+  title: { type: String, required: true },
   author: String,
-  url: String,
+  url: { type: String, required: true },
   likes: { type: Number, default: 0 }
 })
 blogSchema.set('toJSON',

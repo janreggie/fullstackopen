@@ -45,7 +45,7 @@ test('desired properties exists',
 
 test('can add entries properly',
   async () => {
-    const post = { title: 'Ang Musmos na Kabihasnan ng Maynila', author: 'Ibn Saud', likes: 69 }
+    const post = { title: 'Ang Musmos na Kabihasnan ng Maynila', author: 'Ibn Saud', url: 'https://example.org', likes: 69 }
     await api
       .post('/api/blogs')
       .send(post)
@@ -60,7 +60,7 @@ test('can add entries properly',
 
 test('if likes is missing, use zero as default',
   async () => {
-    const post = { title: 'A post with undefined likes', author: 'Unliked author', url: 'https://exammple.com' }
+    const post = { title: 'A post with undefined likes', author: 'Unliked author', url: 'https://example.org' }
     await api
       .post('/api/blogs')
       .send(post)
@@ -70,4 +70,21 @@ test('if likes is missing, use zero as default',
     const blogpostsAtEnd = await blogpostsInDB()
     const contents = blogpostsAtEnd.map(removeIDFromBlogpost)
     expect(contents).toContainEqual(expectedPost)
+  })
+
+test('if no Title or URL, return a 400 Bad Request',
+  async () => {
+    const postWithoutTitle = { author: 'Anon', url: 'https://example.com' }
+    const postWihtoutURL = { title: 'Sans URL', author: 'Anon' }
+    await api
+      .post('/api/blogs')
+      .send(postWithoutTitle)
+      .expect(400)
+    await api
+      .post('/api/blogs')
+      .send(postWihtoutURL)
+      .expect(400)
+
+    const blogpostsAtEnd = await blogpostsInDB()
+    expect(blogpostsAtEnd).toHaveLength(initialBlogposts.length)
   })
