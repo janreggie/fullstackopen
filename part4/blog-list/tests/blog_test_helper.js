@@ -27,6 +27,8 @@ const blogpostsInDB = async () => {
   return blogposts.map(post => post.toJSON())
 }
 
+// removes ID from a blogpost because IDs are variable
+//
 const removeIDFromBlogpost = post => ({
   title: post.title,
   author: post.author,

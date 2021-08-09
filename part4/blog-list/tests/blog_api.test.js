@@ -57,3 +57,17 @@ test('can add entries properly',
     expect(contents).toHaveLength(initialBlogposts.length + 1)
     expect(contents).toContainEqual(post)
   })
+
+test('if likes is missing, use zero as default',
+  async () => {
+    const post = { title: 'A post with undefined likes', author: 'Unliked author', url: 'https://exammple.com' }
+    await api
+      .post('/api/blogs')
+      .send(post)
+      .expect(201)
+
+    const expectedPost = { ...post, likes: 0 }
+    const blogpostsAtEnd = await blogpostsInDB()
+    const contents = blogpostsAtEnd.map(removeIDFromBlogpost)
+    expect(contents).toContainEqual(expectedPost)
+  })
