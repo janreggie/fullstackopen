@@ -2,7 +2,7 @@ import mongoose from 'mongoose'
 import supertest from 'supertest'
 import app from '../app.js'
 import Blog from '../models/blog.js'
-import { blogpostsInDB, initialBlogposts, removeIDFromBlogpost } from './blog_test_helper.js'
+import { blogpostsInDB, initialBlogposts, nonExistingID, removeIDFromBlogpost } from './blog_test_helper.js'
 
 const api = supertest(app)
 
@@ -74,6 +74,52 @@ describe('adding a new blogpost', () => {
 
     const blogpostsAtEnd = await blogpostsInDB()
     expect(blogpostsAtEnd).toHaveLength(initialBlogposts.length)
+  })
+})
+
+describe('updating a blogpost', () => {
+  test('returns 200 OK if valid ID', async () => {
+    const blogpostsAtStart = await blogpostsInDB()
+    const oldPost = blogpostsAtStart[0]
+    const newPost = {
+      author: oldPost.author,
+      title: 'An updated title due to new facts being held',
+      url: oldPost.url,
+      likes: oldPost.likes + 100
+    }
+    const idToUpdate = oldPost.id
+
+    const response = await api
+      .put(`/api/blogs/${idToUpdate}`)
+      .send(newPost)
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+    expect(JSON.parse(response.text)).toMatchObject(newPost)
+
+    const blogpostsAtEnd = await blogpostsInDB()
+    expect(blogpostsAtEnd).not.toContainEqual(oldPost)
+
+    const updatedPost = await Blog.findById(idToUpdate)
+    expect(updatedPost).toMatchObject(newPost)
+  })
+
+  test('returns a 400 Bad Request if some parameters are missing', async () => {
+    const blogpostsAtStart = await blogpostsInDB()
+    const oldPost = blogpostsAtStart[0]
+    const newPost = {
+      author: oldPost.author,
+      url: oldPost.url,
+      likes: oldPost.likes + 100
+    }
+    const idToUpdate = oldPost.id
+
+    await api
+      .put(`/api/blogs/${idToUpdate}`)
+      .send(newPost)
+      .expect(400)
+
+    const blogpostsAtEnd = await blogpostsInDB()
+    expect(blogpostsAtEnd).toContainEqual(oldPost)
   })
 })
 
