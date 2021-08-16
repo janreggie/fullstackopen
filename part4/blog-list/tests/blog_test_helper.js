@@ -16,10 +16,10 @@ const initialBlogposts = [
 ]
 
 const nonExistingID = async () => {
-  const blog = new Blog({ title: 'Will remove this soon' })
+  const blog = new Blog({ title: 'Will remove this soon', author: 'Some author', url: 'https://example.com/NotExisting' })
   await blog.save()
   await blog.remove()
-  return blog.__id.toString()
+  return blog._id.toString()
 }
 
 const blogpostsInDB = async () => {

@@ -6,26 +6,23 @@ import { blogpostsInDB, initialBlogposts, removeIDFromBlogpost } from './blog_te
 
 const api = supertest(app)
 
-beforeEach(
-  async () => {
-    await Blog.deleteMany({})
-    const blogpostObjects = initialBlogposts.map(post => new Blog(post))
-    const promiseArray = blogpostObjects.map(post => post.save())
-    await Promise.all(promiseArray)
-  })
+beforeEach(async () => {
+  await Blog.deleteMany({})
+  await Blog.insertMany(initialBlogposts)
+})
 
-afterAll(() => mongoose.connection.close())
-
-test('blogposts are returned as JSON',
-  async () => {
-    await api
-      .get('/api/blogs')
+describe('in reading blogposts initially stored', () => {
+  test('they are stored in JSON with their desired properties', async () => {
+    const response = await api.get('/api/blogs')
       .expect(200)
       .expect('Content-Type', /application\/json/)
+
+    const firstPost = response.body[0]
+    const proplist = ['id', 'title', 'author', 'url', 'likes']
+    proplist.map(prop => expect(firstPost).toHaveProperty(prop))
   })
 
-test('all blogposts are returned',
-  async () => {
+  test('all blogposts are returned', async () => {
     const response = await api.get('/api/blogs')
     expect(response.body).toHaveLength(initialBlogposts.length)
 
@@ -33,18 +30,10 @@ test('all blogposts are returned',
     const toExpect = initialBlogposts.map(removeIDFromBlogpost)
     expect(contents).toEqual(expect.arrayContaining(toExpect))
   })
+})
 
-test('desired properties exists',
-  async () => {
-    const response = await api.get('/api/blogs')
-    const firstPost = response.body[0]
-
-    const proplist = ['id', 'title', 'author', 'url', 'likes']
-    proplist.map(prop => expect(firstPost).toHaveProperty(prop))
-  })
-
-test('can add entries properly',
-  async () => {
+describe('adding a new blogpost', () => {
+  test('succeeds with 201 if the fields are properly added', async () => {
     const post = { title: 'Ang Musmos na Kabihasnan ng Maynila', author: 'Ibn Saud', url: 'https://example.org', likes: 69 }
     await api
       .post('/api/blogs')
@@ -58,8 +47,7 @@ test('can add entries properly',
     expect(contents).toContainEqual(post)
   })
 
-test('if likes is missing, use zero as default',
-  async () => {
+  test('succeeds, and if likes is undefined, use 0 as default', async () => {
     const post = { title: 'A post with undefined likes', author: 'Unliked author', url: 'https://example.org' }
     await api
       .post('/api/blogs')
@@ -72,8 +60,7 @@ test('if likes is missing, use zero as default',
     expect(contents).toContainEqual(expectedPost)
   })
 
-test('if no Title or URL, return a 400 Bad Request',
-  async () => {
+  test('fails with a 400 Bad Request if Title or URL is undefined', async () => {
     const postWithoutTitle = { author: 'Anon', url: 'https://example.com' }
     const postWihtoutURL = { title: 'Sans URL', author: 'Anon' }
     await api
@@ -88,3 +75,26 @@ test('if no Title or URL, return a 400 Bad Request',
     const blogpostsAtEnd = await blogpostsInDB()
     expect(blogpostsAtEnd).toHaveLength(initialBlogposts.length)
   })
+})
+
+describe('deleting a blogpost', () => {
+  test('returns a 204', async () => {
+    const blogpostsAtStart = await blogpostsInDB()
+    const postToDelete = blogpostsAtStart[0]
+    await api
+      .delete(`/api/blogs/${postToDelete.id}`)
+      .expect(204)
+
+    const blogpostsAtEnd = await blogpostsInDB()
+    expect(blogpostsAtEnd).not.toContainEqual(postToDelete)
+  })
+
+  test('returns a 204 if ID does not exist', async () => {
+    const idToDelete = await nonExistingID()
+    await api
+      .delete(`/api/blogs/${idToDelete}`)
+      .expect(204)
+  })
+})
+
+afterAll(() => mongoose.connection.close())
